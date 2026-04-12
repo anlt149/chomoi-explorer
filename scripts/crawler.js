@@ -22,17 +22,12 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 async function crawlRestaurants() {
   console.log("🚀 Starting crawl for restaurants in Cho Moi, An Giang (Using OpenStreetMap)...");
 
-  // Overpass QL query: Find nodes/ways tagged 'amenity=restaurant' in Cho Moi, An Giang
+  // Overpass QL query: Find nodes within 20km of Chợ Mới center (10.4633, 105.4628)
   const query = `
-    [out:json][timeout:25];
-    area["name"="Chợ Mới"]->.searchArea;
+    [out:json][timeout:50];
     (
-      node["amenity"="restaurant"](area.searchArea);
-      way["amenity"="restaurant"](area.searchArea);
-      node["amenity"="cafe"](area.searchArea);
-      way["amenity"="cafe"](area.searchArea);
-      node["amenity"="fast_food"](area.searchArea);
-      way["amenity"="fast_food"](area.searchArea);
+      node["amenity"~"restaurant|cafe|fast_food|food_court"](around:20000, 10.4633, 105.4628);
+      way["amenity"~"restaurant|cafe|fast_food|food_court"](around:20000, 10.4633, 105.4628);
     );
     out body;
     >;
@@ -41,10 +36,12 @@ async function crawlRestaurants() {
 
   const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
 
+  console.log(overpassUrl);
+
   try {
     const response = await axios.get(overpassUrl);
     const elements = response.data.elements.filter(el => el.tags && el.tags.name);
-    
+
     console.log(`📡 Found ${elements.length} results from OpenStreetMap.`);
 
     const upsertData = elements.map(el => {
@@ -53,21 +50,33 @@ async function crawlRestaurants() {
         name: tags.name,
         address: tags["addr:full"] || tags["addr:street"] || "Chợ Mới, An Giang",
         rating: 4.0, // Default rating for new entries
-        category: tags.amenity === 'cafe' ? 'Cafe' : 
-                  tags.amenity === 'fast_food' ? 'Thức ăn nhanh' : 
-                  'Quán ăn',
+        category: tags.amenity === 'cafe' ? 'Cafe' :
+          tags.amenity === 'fast_food' ? 'Thức ăn nhanh' :
+            'Quán ăn',
         is_active: true,
         description: tags.description || `Quán ăn tại khu vực Chợ Mới.`
       };
     });
 
+    // Deduplicate by name to prevent Postgres "cannot affect row a second time" error
+    const uniqueUpsertData = [];
+    const seenNames = new Set();
+    upsertData.forEach(item => {
+      if (!seenNames.has(item.name)) {
+        seenNames.add(item.name);
+        uniqueUpsertData.push(item);
+      }
+    });
+
+    console.log(`🧹 Deduplicated to ${uniqueUpsertData.length} unique restaurants.`);
+
     // Upsert using 'name' as the unique identifier
     // Note: This assumes names are unique enough. In a real app, we might want to combine name + address.
     const { data, error } = await supabase
       .from('restaurants')
-      .upsert(upsertData, { 
+      .upsert(uniqueUpsertData, {
         onConflict: 'name', // Using Name as the match key
-        ignoreDuplicates: false 
+        ignoreDuplicates: false
       });
 
     if (error) {
