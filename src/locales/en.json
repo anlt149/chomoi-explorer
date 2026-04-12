@@ -1,0 +1,58 @@
+{
+  "header": {
+    "title": "Cho Moi Explorer"
+  },
+  "search": {
+    "placeholder": "Search dishes in Cho Moi..."
+  },
+  "categories": {
+    "Tất cả": "All",
+    "Có giao hàng": "Delivery",
+    "Bún/Phở": "Noodles/Pho",
+    "Ăn vặt": "Snacks",
+    "Cơm": "Rice",
+    "Lẩu/Nướng": "Hotpot/BBQ"
+  },
+  "list": {
+    "showingResults": "Showing {{count}} results",
+    "noResults": "No matching restaurants found.",
+    "connecting": "Connecting to Server..."
+  },
+  "card": {
+    "delivery": "Delivery",
+    "eatIn": "Dine In",
+    "call": "Call"
+  },
+  "modal": {
+    "details": "Detailed Information",
+    "openTime": "Business Hours:",
+    "phone": "Phone:",
+    "description": "Description:",
+    "buyNow": "Call to Order"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "addRestaurant": "Add New Restaurant",
+    "name": "Restaurant Name",
+    "phone": "Phone Number",
+    "imageUrl": "Image Link (URL)",
+    "category": "Category",
+    "hasDelivery": "Offers Delivery?",
+    "address": "Address",
+    "description": "Description",
+    "openTime": "Open Time",
+    "closeTime": "Close Time",
+    "submit": "Add to System",
+    "cancel": "Cancel",
+    "success": "Restaurant added successfully!",
+    "error": "Failed to add restaurant: "
+  },
+  "auth": {
+    "login": "Secure Login",
+    "logout": "Logout",
+    "email": "Email Address",
+    "password": "Password",
+    "signIn": "Enter Dashboard",
+    "cancel": "Go back"
+  }
+}

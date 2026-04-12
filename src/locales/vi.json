@@ -1,0 +1,58 @@
+{
+  "header": {
+    "title": "Khám Phá Chợ Mới"
+  },
+  "search": {
+    "placeholder": "Tìm tên món tại Chợ Mới..."
+  },
+  "categories": {
+    "Tất cả": "Tất cả",
+    "Có giao hàng": "Có giao hàng",
+    "Bún/Phở": "Bún/Phở",
+    "Ăn vặt": "Ăn vặt",
+    "Cơm": "Cơm",
+    "Lẩu/Nướng": "Lẩu/Nướng"
+  },
+  "list": {
+    "showingResults": "Hiển thị {{count}} kết quả",
+    "noResults": "Không tìm thấy quán ăn nào phù hợp tĩnh.",
+    "connecting": "Đang kết nối Server..."
+  },
+  "card": {
+    "delivery": "Giao hàng",
+    "eatIn": "Tại quán",
+    "call": "Gọi"
+  },
+  "modal": {
+    "details": "Thông tin chi tiết",
+    "openTime": "Giờ hoạt động:",
+    "phone": "Điện thoại:",
+    "description": "Mô tả quán:",
+    "buyNow": "Gọi Mua Ngay"
+  },
+  "admin": {
+    "title": "Trang Quản Trị",
+    "addRestaurant": "Thêm Quán Ăn Mới",
+    "name": "Tên Quán",
+    "phone": "Số điện thoại",
+    "imageUrl": "Link Hình Ảnh (URL)",
+    "category": "Danh mục",
+    "hasDelivery": "Có giao hàng không?",
+    "address": "Địa chỉ",
+    "description": "Mô tả chi tiết",
+    "openTime": "Giờ mở cửa",
+    "closeTime": "Giờ đóng cửa",
+    "submit": "Thêm vào Hệ thống",
+    "cancel": "Huỷ",
+    "success": "Đã thêm quán ăn thành công!",
+    "error": "Lỗi khi thêm quán: "
+  },
+  "auth": {
+    "login": "Đăng Nhập",
+    "logout": "Đăng Xuất",
+    "email": "Email Đăng Nhập",
+    "password": "Mật khẩu",
+    "signIn": "Bắt đầu Quản Trị",
+    "cancel": "Quay lại"
+  }
+}
