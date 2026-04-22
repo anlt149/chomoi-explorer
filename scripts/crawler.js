@@ -4,12 +4,15 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
   console.error("❌ Missing Supabase configuration variables.");
-  console.log("💡 Ensure you have SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your .env or .env.local file.");
+  console.error(`- SUPABASE_URL is ${SUPABASE_URL ? 'set' : 'MISSING'}`);
+  console.error(`- SUPABASE_SERVICE_ROLE_KEY is ${SUPABASE_SERVICE_KEY ? 'set' : 'MISSING'}`);
+  console.log("💡 Ensure you have named them exactly SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your GitHub Secrets (Settings > Secrets and variables > Actions > Repository secrets).");
+  console.log("⚠️ If you added them as 'Variables' instead of 'Secrets', they won't be picked up by the secrets. namespace in the workflow.");
   process.exit(1);
 }
 
@@ -34,12 +37,17 @@ async function crawlRestaurants() {
     out skel qt;
   `;
 
-  const overpassUrl = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+  const overpassUrl = `https://overpass-api.de/api/interpreter`;
 
-  console.log(overpassUrl);
+  console.log(`Sending request to Overpass API...`);
 
   try {
-    const response = await axios.get(overpassUrl);
+    const response = await axios.post(overpassUrl, `data=${encodeURIComponent(query)}`, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'ChoMoiExplorerCrawler/1.0 (Automated sync script)'
+      }
+    });
     const elements = response.data.elements.filter(el => el.tags && el.tags.name);
 
     console.log(`📡 Found ${elements.length} results from OpenStreetMap.`);
