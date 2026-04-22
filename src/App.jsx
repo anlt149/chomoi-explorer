@@ -6,17 +6,20 @@ import {
   HeaderContainer, FlexRow, Typography, SearchBarWrapper,
   SearchInput, FilterScroll, ChipButton, FlexCol,
   ModalOverlay, ModalContent, CloseButton,
-  LoadingSpinner, ToastContainer, ToastItem
+  LoadingSpinner, ToastContainer, ToastItem,
+  TabContainer, TabItem
 } from './components/common'
 import RestaurantCard from './components/RestaurantCard'
 import AdminModal from './components/AdminModal'
 import LoginModal from './components/LoginModal'
+import NewsTab from './components/NewsTab'
 import { supabase } from './supabaseClient'
 
 function App() {
   const { t, i18n } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const [activeFilter, setActiveFilter] = useState('Tất cả')
+  const [activeTab, setActiveTab] = useState('explorer')
   const [detailedRestaurant, setDetailedRestaurant] = useState(null) // Modal detail state
   const [isAdminOpen, setIsAdminOpen] = useState(false) // Admin modal state
   const [isLoginOpen, setIsLoginOpen] = useState(false) // Login modal state
@@ -167,10 +170,20 @@ function App() {
         </FlexRow>
       </HeaderContainer>
 
-      {/* Main Content Area - Map logic removed */}
+      {/* Navigation Tabs */}
+      <TabContainer>
+        <TabItem active={activeTab === 'explorer'} onClick={() => setActiveTab('explorer')}>
+          Khám phá
+        </TabItem>
+        <TabItem active={activeTab === 'news'} onClick={() => setActiveTab('news')}>
+          Tin tức
+        </TabItem>
+      </TabContainer>
+
+      {/* Main Content Area */}
       <MainContent>
-        {/* Single Column / List View */}
-        <ListSection mobileHidden={false} style={{ maxWidth: '100%', borderRight: 'none', minWidth: '100%' }}>
+        {activeTab === 'explorer' ? (
+          <ListSection mobileHidden={false} style={{ maxWidth: '100%', borderRight: 'none', minWidth: '100%' }}>
           <FlexCol padding="1rem" style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', boxShadow: 'var(--shadow-sm)' }}>
             <SearchBarWrapper style={{ width: '100%', boxSizing: 'border-box' }}>
               <Search size={20} color="var(--text-muted)" style={{ marginRight: '0.5rem' }} />
@@ -223,6 +236,9 @@ function App() {
             )}
           </div>
         </ListSection>
+        ) : (
+          <NewsTab />
+        )}
       </MainContent>
 
       {/* Detail Modal */}

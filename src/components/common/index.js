@@ -275,3 +275,27 @@ export const ToastItem = styled.div`
   justify-content: center;
 `;
 
+export const TabContainer = styled.div`
+  display: flex;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  width: 100%;
+`;
+
+export const TabItem = styled.button`
+  flex: 1;
+  padding: 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: ${props => props.active ? '700' : '500'};
+  color: ${props => props.active ? 'var(--primary-color)' : 'var(--text-muted)'};
+  border-bottom: 2px solid ${props => props.active ? 'var(--primary-color)' : 'transparent'};
+  transition: all 0.2s ease;
+  
+  &:hover {
+    color: var(--primary-color);
+    background-color: var(--bg-tertiary);
+  }
+`;
