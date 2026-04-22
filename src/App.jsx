@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from 'react'
-import { Search, X, Globe, Menu } from 'lucide-react'
+import { useState, useMemo, useEffect, useRef } from 'react'
+import { Search, X, Globe, Menu, ChevronUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {
   AppContainer, MainContent, ListSection,
@@ -29,6 +29,36 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [userSession, setUserSession] = useState(null)
   const [toasts, setToasts] = useState([])
+
+  const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false)
+  const [showScrollTop, setShowScrollTop] = useState(false)
+  const lastScrollY = useRef(0)
+  const scrollContainerRef = useRef(null)
+
+  const handleScroll = (e) => {
+    const currentScrollY = e.target.scrollTop;
+    
+    if (currentScrollY > 200) {
+      setShowScrollTop(true);
+    } else {
+      setShowScrollTop(false);
+    }
+
+    if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+      setIsHeaderCollapsed(true);
+      if (isMenuOpen) setIsMenuOpen(false);
+    } else if (currentScrollY < lastScrollY.current) {
+      setIsHeaderCollapsed(false);
+    }
+
+    lastScrollY.current = currentScrollY;
+  };
+
+  const scrollToTop = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const categories = ['Tất cả', 'Có giao hàng', 'Bún/Phở', 'Ăn vặt', 'Cơm', 'Lẩu/Nướng']
 
@@ -115,7 +145,15 @@ function App() {
   return (
     <AppContainer>
       {/* Header */}
-      <HeaderContainer style={{ justifyContent: 'space-between', padding: '1rem' }}>
+      <HeaderContainer style={{ 
+        justifyContent: 'space-between', 
+        padding: '1rem',
+        transition: 'all 0.3s ease',
+        marginTop: isHeaderCollapsed ? '-80px' : '0',
+        opacity: isHeaderCollapsed ? 0 : 1,
+        pointerEvents: isHeaderCollapsed ? 'none' : 'auto',
+        zIndex: 50
+      }}>
         <FlexRow gap="0.5rem">
           <Typography size="1.25rem" weight={700}>{t('header.title')}</Typography>
         </FlexRow>
@@ -213,7 +251,11 @@ function App() {
           </FlexCol>
 
           {/* List Content */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
+          <div 
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            style={{ flex: 1, overflowY: 'auto', padding: '1rem', scrollBehavior: 'smooth' }}
+          >
             {isLoading ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5rem 0', gap: '1rem' }}>
                 <LoadingSpinner />
@@ -237,7 +279,11 @@ function App() {
           </div>
         </ListSection>
         ) : (
-          <NewsTab />
+          <NewsTab 
+            onScroll={handleScroll}
+            scrollRef={scrollContainerRef}
+            isHeaderCollapsed={isHeaderCollapsed}
+          />
         )}
       </MainContent>
 
@@ -302,6 +348,35 @@ function App() {
       {/* Login Modal */}
       {isLoginOpen && !userSession && (
         <LoginModal onClose={() => setIsLoginOpen(false)} />
+      )}
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          style={{
+            position: 'fixed',
+            bottom: '2rem',
+            right: '2rem',
+            backgroundColor: 'var(--primary-color)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '50%',
+            width: '3rem',
+            height: '3rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: 'var(--shadow-lg)',
+            zIndex: 100,
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          <ChevronUp size={24} />
+        </button>
       )}
 
       {/* Global Toast Notifications */}

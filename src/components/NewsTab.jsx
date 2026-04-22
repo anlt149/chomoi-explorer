@@ -17,7 +17,7 @@ const RSS_URLS = [
   'https://news.google.com/rss/search?q=An+Giang+site:tuoitre.vn&hl=vi&gl=VN&ceid=VN:vi'
 ];
 
-export default function NewsTab() {
+export default function NewsTab({ onScroll, scrollRef, isHeaderCollapsed }) {
   const { t } = useTranslation();
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,14 +109,26 @@ export default function NewsTab() {
 
   return (
     <ListSection mobileHidden={false} style={{ maxWidth: '100%', minWidth: '100%', borderRight: 'none' }}>
-      <FlexCol padding="1rem" style={{ borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-secondary)', boxShadow: 'var(--shadow-sm)' }}>
+      <FlexCol padding="1rem" style={{ 
+        borderBottom: '1px solid var(--border-color)', 
+        backgroundColor: 'var(--bg-secondary)', 
+        boxShadow: 'var(--shadow-sm)',
+        transition: 'all 0.3s ease',
+        marginTop: isHeaderCollapsed ? '-100px' : '0',
+        opacity: isHeaderCollapsed ? 0 : 1,
+        pointerEvents: isHeaderCollapsed ? 'none' : 'auto'
+      }}>
         <Typography size="1.25rem" weight={700}>Tin tức Chợ Mới, An Giang</Typography>
         <Typography size="0.875rem" color="text-muted" margin="0.5rem 0 0 0">
           Cập nhật tin tức mới nhất từ Google News
         </Typography>
       </FlexCol>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div 
+        ref={scrollRef}
+        onScroll={onScroll}
+        style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem', scrollBehavior: 'smooth' }}
+      >
         {isLoading ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '5rem 0', gap: '1rem' }}>
             <LoadingSpinner />
